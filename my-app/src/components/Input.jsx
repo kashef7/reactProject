@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { UserProvider } from './UserProvider'
 
 export default function Input(props) {
     const [username, setUsername] = useState("");
@@ -8,13 +7,22 @@ export default function Input(props) {
     const [confirmPassword, setCPassword] = useState("");
     const [users, setUsers] = useState([{ username: "", password: "" }]);
 
+    // Fetch users from the backend when the component mounts
     useEffect(() => {
-        console.log(users);
-    }, [users]);
+        fetch("http://localhost:5000/users")
+            .then((response) => response.json()) // Parse the JSON from the response
+            .then((data) => {
+                setUsers(data); // Update the users state with the fetched data
+            })
+            .catch((error) => {
+                console.error("There was an error fetching the users!", error); // Log any errors
+            });
+    }, []);
 
     function handleUsernameChange(event) {
         setUsername(event.target.value);
     }
+
     function handleCPasswordChange(event) {
         setCPassword(event.target.value);
     }
@@ -23,20 +31,26 @@ export default function Input(props) {
         setPassword(event.target.value);
     }
 
+    // Add a new user to the backend
+    function addUser(un, p) {
+        fetch("http://localhost:5000/add", {
+            method: "POST", // Specify the request method as POST
+            headers: {
+                "Content-Type": "application/json" // Set the content type to JSON
+            },
+            body: JSON.stringify({ username: un, password: p }) // Convert the user data to a JSON string
+        });
+    }
+
     function handleClick(event) {
-        if(event.target.name === "Register"){
-            if(confirmPassword === password){
-                setUsers(prevUsers => [
-            ...prevUsers,
-            { username: username, password: password }
-        ]);
-            }
-            else if(confirmPassword !== password){
+        if (event.target.name === "Register") {
+            if (confirmPassword === password) {
+                addUser(username, password); // Call addUser function if passwords match
+            } else if (confirmPassword !== password) {
                 console.log('password dont match');
             }
-        }
-        else{
-            const userExists = users.some(user => 
+        } else {
+            const userExists = users.some(user =>
                 user.username === username && user.password === password
             );
             console.log(users);
@@ -46,7 +60,6 @@ export default function Input(props) {
                 console.log("Invalid username or password");
             }
         }
-        
     }
 
     return (
@@ -57,7 +70,7 @@ export default function Input(props) {
             {props.header === "Register" && (
                 <input placeholder='Confirm Password' id='confirmPassword' type='password' onChange={handleCPasswordChange}></input>
             )}
-            <button name={props.header==='Register'?'Register':'Login'} onClick={handleClick}>{props.type}</button>
+            <button name={props.header === 'Register' ? 'Register' : 'Login'} onClick={handleClick}>{props.type}</button>
             <p>
                 <Link to={props.linkTo} className='link'>{props.linkHeader}</Link>
             </p>
