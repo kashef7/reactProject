@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Input(props) {
     const [username, setUsername] = useState("");
@@ -7,15 +7,16 @@ export default function Input(props) {
     const [confirmPassword, setCPassword] = useState("");
     const [users, setUsers] = useState([{ username: "", password: "" }]);
 
-    // Fetch users from the backend when the component mounts
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetch("http://localhost:5000/users")
-            .then((response) => response.json()) // Parse the JSON from the response
+            .then((response) => response.json())
             .then((data) => {
-                setUsers(data); // Update the users state with the fetched data
+                setUsers(data);
             })
             .catch((error) => {
-                console.error("There was an error fetching the users!", error); // Log any errors
+                console.error("There was an error fetching the users!", error);
             });
     }, []);
 
@@ -31,21 +32,21 @@ export default function Input(props) {
         setPassword(event.target.value);
     }
 
-    // Add a new user to the backend
     function addUser(un, p) {
         fetch("http://localhost:5000/add", {
-            method: "POST", // Specify the request method as POST
+            method: "POST",
             headers: {
-                "Content-Type": "application/json" // Set the content type to JSON
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({ username: un, password: p }) // Convert the user data to a JSON string
+            body: JSON.stringify({ username: un, password: p })
         });
     }
 
     function handleClick(event) {
         if (event.target.name === "Register") {
             if (confirmPassword === password) {
-                addUser(username, password); // Call addUser function if passwords match
+                addUser(username, password);
+                navigate('/main', { state: { username } });
             } else if (confirmPassword !== password) {
                 console.log('password dont match');
             }
@@ -56,6 +57,7 @@ export default function Input(props) {
             console.log(users);
             if (userExists) {
                 console.log("Login successful!");
+                navigate('/main', { state: { username } });
             } else {
                 console.log("Invalid username or password");
             }
@@ -77,3 +79,4 @@ export default function Input(props) {
         </div>
     );
 }
+
