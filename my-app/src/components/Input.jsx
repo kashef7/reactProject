@@ -5,7 +5,7 @@ export default function Input(props) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setCPassword] = useState("");
-    const [users, setUsers] = useState([{ username: "", password: "" }]);
+    const [users, setUsers] = useState([{ username: "", password: "" , secret_id: "" }]);
 
     const navigate = useNavigate();
 
@@ -32,13 +32,19 @@ export default function Input(props) {
         setPassword(event.target.value);
     }
 
+    function randomId() {
+        return  Math.floor(Math.random()*100000);
+    }
+
+    let id = randomId();
+
     function addUser(un, p) {
         fetch("http://localhost:5000/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ username: un, password: p })
+            body: JSON.stringify({ username: un, password: p , id: id})
         });
     }
 
@@ -46,7 +52,7 @@ export default function Input(props) {
         if (event.target.name === "Register") {
             if (confirmPassword === password) {
                 addUser(username, password);
-                navigate('/main', { state: { username } });
+                navigate('/main', { state: { username , id} });
             } else if (confirmPassword !== password) {
                 console.log('password dont match');
             }
@@ -57,7 +63,10 @@ export default function Input(props) {
             console.log(users);
             if (userExists) {
                 console.log("Login successful!");
-                navigate('/main', { state: { username } });
+                let user = users.find(user => user.username === username);
+                let id = user.secret_id;
+                console.log(id);
+                navigate('/main', { state: { username , id} });
             } else {
                 console.log("Invalid username or password");
             }

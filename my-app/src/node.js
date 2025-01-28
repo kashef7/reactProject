@@ -39,7 +39,14 @@ app.use(bodyParser.json());
 
 // Endpoint to fetch all users from the database
 app.get("/users", (req, res) => {
-    db.query("SELECT * FROM projectuser", (err, result) => {
+    db.query(`
+        SELECT 
+            pu.username, 
+            pu.password,
+            s.secret_id
+        FROM projectuser pu
+        LEFT JOIN secrets s ON pu.id = s.user_id
+    `, (err, result) => {
         if (err) {
             console.error('Query error', err.stack);
             res.status(500).send("Error fetching users");
@@ -51,16 +58,28 @@ app.get("/users", (req, res) => {
 
 // Endpoint to add a new user to the database
 app.post("/add", (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, id } = req.body;
     db.query(
-        "INSERT INTO projectuser (username, password) VALUES ($1, $2) RETURNING *",
+        "INSERT INTO projectuser (username, password) VALUES ($1, $2) RETURNING id",
         [username, password],
         (err, result) => {
             if (err) {
                 console.error(err);
                 res.status(500).send("Error inserting values");
             } else {
-                res.json(result.rows[0]); // Send the inserted user as a JSON response
+                const userId = result.rows[0].id;
+                db.query(
+                    "INSERT INTO secrets (secret_id, user_id, secret) VALUES ($1, $2, $3) RETURNING *",
+                    [id, userId, 'no secret yet'],
+                    (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send("Error inserting values");
+                        } else {
+                            res.json(result.rows[0]);
+                        }
+                    }
+                );
             }
         }
     );
