@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 
 export default function Input(props) {
     const [username, setUsername] = useState("");
+    const [check, setCheck] = useState(false);
+    const [msg, setMsg] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setCPassword] = useState("");
     const [users, setUsers] = useState([{ username: "", password: "" , secret_id: "" }]);
@@ -47,7 +49,6 @@ export default function Input(props) {
             body: JSON.stringify({ username: un, password: p , id: id})
         });
     }
-
     function handleClick(event) {
         if (event.target.name === "Register") {
             if (confirmPassword === password) {
@@ -55,6 +56,8 @@ export default function Input(props) {
                 navigate('/main', { state: { username , id} });
             } else if (confirmPassword !== password) {
                 console.log('password dont match');
+                setCheck(true);
+                setMsg("Password doesn't match");
             }
         } else {
             const userExists = users.some(user =>
@@ -69,6 +72,8 @@ export default function Input(props) {
                 navigate('/main', { state: { username , id} });
             } else {
                 console.log("Invalid username or password");
+                setCheck(true);
+                password === "" ? setMsg("Password field is empty") : setMsg("Invalid username or password");
             }
         }
     }
@@ -81,6 +86,7 @@ export default function Input(props) {
             {props.header === "Register" && (
                 <input placeholder='Confirm Password' id='confirmPassword' type='password' onChange={handleCPasswordChange}></input>
             )}
+            {check && <p className='msg'>{msg}</p>}
             <button name={props.header === 'Register' ? 'Register' : 'Login'} onClick={handleClick}>{props.type}</button>
             <p>
                 <Link to={props.linkTo} className='link'>{props.linkHeader}</Link>

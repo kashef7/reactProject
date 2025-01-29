@@ -85,6 +85,25 @@ app.post("/add", (req, res) => {
     );
 });
 
+//Post request to update the secret to the data base
+app.post("/addSecret", (req,res)=>{
+    const {secret , id} = req.body;
+    db.query(
+        "UPDATE secrets SET secret = $1 WHERE secret_id = $2",
+        [secret , id],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send("Error inserting values");
+            } else {
+                res.json(result.rows[0]);
+            }
+        }
+    );
+})
+
+
+
 // Start the server and listen on the specified port
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

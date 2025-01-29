@@ -37,6 +37,11 @@ body {
     margin-bottom: 20px; /* Space below the header */
 }
 
+.msg{
+    color: rgb(100, 0, 0);
+    font-size: 12px;
+}
+
 input{
     padding: 7px;
     margin: 4px;
