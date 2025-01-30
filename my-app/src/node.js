@@ -102,7 +102,21 @@ app.post("/addSecret", (req,res)=>{
     );
 })
 
-
+app.get('/secrets', (req, res) => {
+    const id = req.query.id;
+    db.query("SELECT * FROM secrets WHERE secret_id = $1", [id], (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send("Error fetching secret");
+        } else {
+            if (result.rows.length > 0) {
+                res.json(result.rows);
+            } else {
+                res.status(404).send("Secret not found");
+            }
+        }
+    });
+});
 
 // Start the server and listen on the specified port
 app.listen(port, () => {
