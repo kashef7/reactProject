@@ -12,7 +12,7 @@ export default function Input(props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("http://localhost:5000/users")
+        fetch("/api/users")
             .then((response) => response.json())
             .then((data) => {
                 setUsers(data);
@@ -41,7 +41,7 @@ export default function Input(props) {
     let id = randomId();
 
     function addUser(un, p) {
-        fetch("http://localhost:5000/add", {
+        fetch("/api/add", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
