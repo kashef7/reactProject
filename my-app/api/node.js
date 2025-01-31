@@ -38,7 +38,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Endpoint to fetch all users from the database
-app.get("/users", (req, res) => {
+app.get("/api/users", (req, res) => {
     db.query(`
         SELECT 
             pu.username, 
@@ -57,7 +57,7 @@ app.get("/users", (req, res) => {
 });
 
 // Endpoint to add a new user to the database
-app.post("/add", (req, res) => {
+app.post("/api/add", (req, res) => {
     const { username, password, id } = req.body;
     db.query(
         "INSERT INTO projectuser (username, password) VALUES ($1, $2) RETURNING id",
@@ -86,7 +86,7 @@ app.post("/add", (req, res) => {
 });
 
 //Post request to update the secret to the data base
-app.post("/addSecret", (req,res)=>{
+app.post("/api/addSecret", (req,res)=>{
     const {secret , id} = req.body;
     db.query(
         "UPDATE secrets SET secret = $1 WHERE secret_id = $2",
@@ -102,7 +102,7 @@ app.post("/addSecret", (req,res)=>{
     );
 })
 
-app.get('/secrets', (req, res) => {
+app.get('/api/secrets', (req, res) => {
     const id = req.query.id;
     db.query("SELECT * FROM secrets WHERE secret_id = $1", [id], (err, result) => {
         if (err) {
@@ -122,3 +122,5 @@ app.get('/secrets', (req, res) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+export default app;

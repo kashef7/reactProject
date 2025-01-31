@@ -14,7 +14,7 @@ export default function MainPage() {
     }
 
     function submitSecret(){
-        fetch("http://localhost:5000/addSecret", {
+        fetch("/api/addSecret", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

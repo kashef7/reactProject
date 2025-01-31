@@ -12,7 +12,7 @@ export default function SecretPage() {
     }
 
     function handleClick() {
-        fetch(`http://localhost:5000/secrets?id=${id}`)
+        fetch(`/api/secrets?id=${id}`)
         .then((res) => res.json())
         .then((data) => {
             console.log(data[0].secret);
