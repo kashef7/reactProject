@@ -6,7 +6,7 @@ import { Link,useLocation,useNavigate } from 'react-router-dom';
 export default function SecretPage() {
     const [msg, setMsg] = useState('🙈');
     const [id , setId] = useState();
-
+    const navigate  = useNavigate();
     function handleChange(event){
         setId(event.target.value);
     }
@@ -22,6 +22,9 @@ export default function SecretPage() {
             console.error("There was an error fetching the secret", error);
         });
     }
+    function submitSecret(){
+        navigate('/main');
+    }
     return(
         <div className='container'>
             <h1>Secret Page</h1>
@@ -30,6 +33,7 @@ export default function SecretPage() {
             </div>
             <input onChange={handleChange} type='number' placeholder='secret id' />
             <button onClick={handleClick} className='secretButton'>Find secret🙈</button>
+            <button onClick={submitSecret} className='secretButton'>Submit secret🤫</button>
             <p>
                 <Link to='/' className='link'>Logout</Link>
             </p>
